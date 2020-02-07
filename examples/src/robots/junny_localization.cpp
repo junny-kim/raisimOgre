@@ -123,8 +123,6 @@ int main(int argc, char **argv) {
         if (controlDecimation % 50 != 0)
             return;
 
-        //asdfasdf
-
 
         /// laikago joint PD controller
         Eigen::VectorXd jointNominalConfig(19), jointVelocityTarget(18);
