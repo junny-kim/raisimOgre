@@ -1,8 +1,8 @@
 //
-// Created by Jemin Hwangbo on 10/15/19.
+// Created by Junny Kim on 07/02/20.
 // MIT License
 //
-// Copyright (c) 2019-2019 Robotic Systems Lab, ETH Zurich
+// Copyright (c) 2019-2020 DRCD Lab, KAIST
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
