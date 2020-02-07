@@ -27,6 +27,8 @@
 #include "raisimBasicImguiPanel.hpp"
 #include "raisimKeyboardCallback.hpp"
 #include "helper.hpp"
+#include "../../../../../raisim_build/include/raisim/OgreVis.hpp"
+
 
 void setupCallback() {
   auto vis = raisim::OgreVis::get();
@@ -58,7 +60,7 @@ void setupCallback() {
 int main(int argc, char **argv) {
   /// create raisim world
   raisim::World world;
-  world.setTimeStep(0.0025);
+  world.setTimeStep(0.0001);
 
   auto vis = raisim::OgreVis::get();
 
@@ -72,7 +74,7 @@ int main(int argc, char **argv) {
   vis->setAntiAliasing(2);
   vis->setDesiredFPS(25);
 
-  raisim::gui::manualStepping = true;
+  raisim::gui::manualStepping = false;
 
   /// starts visualizer thread
   vis->initApp();
@@ -104,7 +106,7 @@ int main(int argc, char **argv) {
   aliengo->setName("aliengo");
 
   std::default_random_engine generator;
-  std::normal_distribution<double> distribution(0.0, 0.2);
+  std::normal_distribution<double> distribution(0.0, 0.0);
   std::srand(std::time(nullptr));
   aliengo->printOutBodyNamesInOrder();
 
@@ -112,11 +114,15 @@ int main(int argc, char **argv) {
   auto controller = [&aliengo, &generator, &distribution]() {
     static size_t controlDecimation = 0;
 
-    if (controlDecimation++ % 2500 == 0)
+
+      std::cout<<controlDecimation<<std::endl;
+
+    if (controlDecimation++ % 2500000 == 0)
       aliengo->setGeneralizedCoordinate({0, 0, 0.48, 1, 0.0, 0.0, 0.0, 0.0, 0.5, -1,
                                          0, 0.5, -1, 0.00, 0.5, -1, 0, 0.5, -1});
     if (controlDecimation % 50 != 0)
       return;
+
 
     /// laikago joint PD controller
     Eigen::VectorXd jointNominalConfig(19), jointVelocityTarget(18);

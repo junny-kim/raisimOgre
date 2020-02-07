@@ -27,6 +27,8 @@
 #include "raisimBasicImguiPanel.hpp"
 #include "raisimKeyboardCallback.hpp"
 
+
+
 void setupCallback() {
   auto vis = raisim::OgreVis::get();
 
@@ -58,7 +60,7 @@ void setupCallback() {
 int main(int argc, char **argv) {
   /// create raisim world
   raisim::World world;
-  world.setTimeStep(0.001);
+  world.setTimeStep(0.0001);
   world.setERP(0.5, 0.);
 
   /// starts visualizer thread

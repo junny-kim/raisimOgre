@@ -9,10 +9,10 @@ find_package(Eigen3 REQUIRED HINTS ${Eigen3_HINT})
 #==
 
 function(create_executable app_name file_name)
-  add_executable(${app_name} ${file_name})
-  target_link_libraries(${app_name} PUBLIC raisim::raisimOgre)
-  target_include_directories(${app_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${EIGEN3_INCLUDE_DIRS})
-  target_compile_definitions(${app_name} PRIVATE "-DEXAMPLE_ROBOT_RESOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/rsc/")
+    add_executable(${app_name} ${file_name})
+    target_link_libraries(${app_name} PUBLIC raisim::raisimOgre)
+    target_include_directories(${app_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${EIGEN3_INCLUDE_DIRS})
+    target_compile_definitions(${app_name} PRIVATE "-DEXAMPLE_ROBOT_RESOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/rsc/")
 endfunction()
 
 # robots
@@ -25,6 +25,7 @@ create_executable(chain src/robots/chain.cpp)
 create_executable(aliengo src/robots/aliengo.cpp)
 create_executable(shunk src/robots/shunk.cpp)
 create_executable(creatingRobotUsingCPP src/robots/creatingRobotUsingCPP.cpp)
+create_executable(junny_localization src/robots/junny_localization.cpp)
 
 # remote
 create_executable(remoteVisualzation_server src/remote/server.cpp)
@@ -46,20 +47,21 @@ create_executable(visualObjects src/visualObjects/visualObjects.cpp)
 #==
 
 set(EXAMPLE_BINS
-  anymal
-  laikago
-  anymalOnHeightMap
-  primitives
-  kinova
-  atlas
-  remoteVisualzation_server
-  remoteVisualzation_client
-  newtonsCradle
-)
+        anymal
+        laikago
+        anymalOnHeightMap
+        primitives
+        kinova
+        atlas
+        remoteVisualzation_server
+        remoteVisualzation_client
+        newtonsCradle
+        junny_localization
+        )
 
 install(
-  TARGETS ${EXAMPLE_BINS}
-  RUNTIME DESTINATION bin
+        TARGETS ${EXAMPLE_BINS}
+        RUNTIME DESTINATION bin
 )
 
 # EOF
