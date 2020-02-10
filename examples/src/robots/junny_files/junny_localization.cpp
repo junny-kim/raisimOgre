@@ -22,14 +22,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-//asdasdsad
-
-
 #include <raisim/OgreVis.hpp>
 #include "raisimBasicImguiPanel.hpp"
 #include "raisimKeyboardCallback.hpp"
 #include "helper.hpp"
-#include "../../../../../raisim_build/include/raisim/OgreVis.hpp"
+#include "SensorSimulation.hpp"
+#include <rbdl/rbdl.h>
+#include <rbdl/rbdl_utils.h>
 
 
 void setupCallback() {
@@ -62,7 +61,8 @@ void setupCallback() {
 int main(int argc, char **argv) {
     /// create raisim world
     raisim::World world;
-    world.setTimeStep(0.0001);
+    double dt = 0.0001;
+    world.setTimeStep(dt);
 
     auto vis = raisim::OgreVis::get();
 
@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 
     auto aliengo = world.addArticulatedSystem(raisim::loadResource("aliengo/aliengo.urdf"));
     auto aliengoVis = vis->createGraphicalObject(aliengo, "aliengo");
-    aliengo->setGeneralizedCoordinate({0, 0, 0.48, 1, 0.0, 0.0, 0.0, 0.0, 0.5, -1, 0, 0.5, -1,
+    aliengo->setGeneralizedCoordinate({0, 0, 0.48, 1.0, 0.0, 0.0, 0.0, 0.0, 0.5, -1, 0, 0.5, -1,
                                        0.00, 0.5, -1, 0, 0.5, -0.7});
     aliengo->setGeneralizedForce(Eigen::VectorXd::Zero(aliengo->getDOF()));
     aliengo->setControlMode(raisim::ControlMode::PD_PLUS_FEEDFORWARD_TORQUE);
@@ -108,22 +108,64 @@ int main(int argc, char **argv) {
     aliengo->setName("aliengo");
 
     std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0, 0.0);
+    std::normal_distribution<double> distribution(0.0, 0.001);
     std::srand(std::time(nullptr));
     aliengo->printOutBodyNamesInOrder();
+    aliengo->printOutFrameNamesInOrder();
+
+
+
+    SensorSimulation::ImuSimulation imu_simulation;
+
 
     // lambda function for the controller
-    auto controller = [&aliengo, &generator, &distribution]() {
+    auto controller = [&aliengo, &generator, &distribution, &dt, &world, &imu_simulation]() {
         static size_t controlDecimation = 0;
 
 
-//        std::cout<<aliengo->getBodyPose()<<std::endl;
 
-        if (controlDecimation++ % 2500000 == 0)
-            aliengo->setGeneralizedCoordinate({0, 0, 0.48, 1, 0.0, 0.0, 0.0, 0.0, 0.5, -1,
-                                               0, 0.5, -1, 0.00, 0.5, -1, 0, 0.5, -1});
+
+
+
+
+//        aliengo->getAngularVelocity(aliengo->getBodyIdx("base"),bodyangularvelocity);
+//        aliengo->getVelocity(aliengo->getBodyIdx("base"),bodyvelocity);
+//        aliengo->getBodyPose(aliengo->getBodyIdx("base"),bodyrotation,bodyposition);
+
+        aliengo->getFramePosition(aliengo->getFrameIdxByName("imu_joint"),imu_simulation.imu_Position);
+        aliengo->getFrameVelocity(aliengo->getFrameIdxByName("imu_joint"),imu_simulation.imu_Velocity);
+        aliengo->getFrameAngularVelocity(aliengo->getFrameIdxByName("imu_joint"),imu_simulation.imu_AngularVelocity);
+        aliengo->getFrameOrientation(aliengo->getFrameIdxByName("imu_joint"),imu_simulation.imu_Rotation);
+
+        if (controlDecimation == 0)
+        {
+            imu_simulation.imu_Velocity_bef = imu_simulation.imu_Velocity;
+        }
+
+        imu_simulation.imu_data = imu_simulation.imu_simulation(imu_simulation.imu_Rotation, imu_simulation.imu_AngularVelocity, imu_simulation.imu_Velocity, imu_simulation.imu_Velocity_bef, dt, world);
+
+        if (controlDecimation++ % 50 == 0)
+        {
+//            aliengo->setGeneralizedCoordinate({0, 0, 0.48, 1, 0.0, 0.0, 0.0, 0.0, 0.5, -1,
+//                                               0, 0.5, -1, 0.00, 0.5, -1, 0, 0.5, -1});
+//            std::cout<<bodyposition<<std::endl;
+//            std::cout<<bodyvelocity<<std::endl;
+//            std::cout<<bodyangularvelocity<<std::endl;
+//            std::cout<<bodyrotation<<std::endl;
+
+
+        imu_simulation.imu_data_print();
+
+
+        }
+
         if (controlDecimation % 50 != 0)
             return;
+
+
+
+
+
 
 
         /// laikago joint PD controller

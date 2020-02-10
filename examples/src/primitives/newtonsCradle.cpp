@@ -145,6 +145,20 @@ int main(int argc, char **argv) {
   /// create visualizer objects
   vis->createGraphicalObject(ground, 20, "floor", "checkerboard_green");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /// set camera
   vis->getCameraMan()->getCamera()->setPosition(0, 3.5, 1.5);
   vis->getCameraMan()->getCamera()->pitch(Ogre::Radian(1.2));

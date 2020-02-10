@@ -26,7 +26,7 @@ add_library(${PROJECT_NAME} SHARED
   ${CMAKE_CURRENT_SOURCE_DIR}/src/AssimpLoader.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/OgreVis.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraMan.cpp
-)
+        examples/src/robots/junny_files/SensorSimulation.cpp examples/src/robots/junny_files/SensorSimulation.hpp examples/src/robots/junny_files/sensor_model.hpp)
 
 add_library(raisim::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 add_subdirectory(third-party/assimp)

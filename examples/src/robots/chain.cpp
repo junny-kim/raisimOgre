@@ -58,7 +58,7 @@ void setupCallback() {
 int main(int argc, char **argv) {
   /// create raisim world
   raisim::World world;
-  world.setTimeStep(0.001);
+  world.setTimeStep(0.0001);
   world.setERP(world.getTimeStep() * .1, world.getTimeStep() * .1);
 
   auto vis = raisim::OgreVis::get();
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
   vis->setImguiRenderCallback(imguiRenderCallBack);
   vis->setSetUpCallback(setupCallback);
   vis->setAntiAliasing(8);
-  raisim::gui::manualStepping = true;
+  raisim::gui::manualStepping = false;
 
   /// starts visualizer thread
   vis->initApp();
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
   /// create raisim objects
   auto ground = world.addGround();
   auto chain = world.addArticulatedSystem(raisim::loadResource("chain/robot.urdf"));
-  chain->setGeneralizedVelocity({6,0,0,0,0,0,0,0,0});
+  chain->setGeneralizedVelocity({600,0,0});
 
   /// create visualizer objects
   vis->createGraphicalObject(ground, 50, "floor", "default");
@@ -88,6 +88,61 @@ int main(int argc, char **argv) {
   vis->getCameraMan()->setYawPitchDist(Ogre::Radian(0), -Ogre::Radian(M_PI_4), 2.5);
   chain->setGeneralizedForce(Eigen::VectorXd::Zero(chain->getDOF()));
   chain->setControlMode(raisim::ControlMode::FORCE_AND_TORQUE);
+  chain->printOutBodyNamesInOrder();
+  chain->printOutFrameNamesInOrder();
+
+    auto controller = [&chain]() {
+        static size_t controlDecimation = 0;
+
+        raisim::Vec<3> bodyposition;
+        raisim::Vec<3> bodyvelocity;
+        raisim::Vec<3> bodyangularvelocity;
+        raisim::Mat<3,3> bodyrotation;
+
+        raisim::Vec<3> frameposition;
+        raisim::Vec<3> framevelocity;
+        raisim::Vec<3> frameangularvelocity;
+        raisim::Mat<3,3> framerotation;
+
+
+        chain->getAngularVelocity(chain->getBodyIdx("link2"),bodyangularvelocity);
+        chain->getVelocity(chain->getBodyIdx("link2"),bodyvelocity);
+        chain->getBodyPose(chain->getBodyIdx("link2"),bodyrotation,bodyposition);
+        chain->getFramePosition(chain->getFrameIdxByName("link1Tolink2"),frameposition);
+        chain->getFrameVelocity(chain->getFrameIdxByName("link1Tolink2"),framevelocity);
+        chain->getFrameAngularVelocity(chain->getFrameIdxByName("link1Tolink2"),frameangularvelocity);
+        chain->getFrameOrientation(chain->getFrameIdxByName("link1Tolink2"),framerotation);
+
+
+
+
+
+        if (controlDecimation++ % 1 == 0)
+        {
+//            aliengo->setGeneralizedCoordinate({0, 0, 0.48, 1, 0.0, 0.0, 0.0, 0.0, 0.5, -1,
+//                                               0, 0.5, -1, 0.00, 0.5, -1, 0, 0.5, -1});
+
+
+//            std::cout<<bodyposition<<std::endl;
+//            std::cout<<bodyvelocity<<std::endl;
+//            std::cout<<bodyangularvelocity<<std::endl;
+//            std::cout<<bodyrotation<<std::endl;
+
+            std::cout<<frameposition<<std::endl;
+            std::cout<<framevelocity<<std::endl;
+            std::cout<<frameangularvelocity<<std::endl;
+            std::cout<<framerotation<<std::endl;
+
+        }
+
+
+
+    };
+
+    vis->setControlCallback(controller);
+
+
+
 
   /// run the app
   vis->run();
