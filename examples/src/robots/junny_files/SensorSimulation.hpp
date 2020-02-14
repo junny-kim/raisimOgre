@@ -59,15 +59,18 @@ namespace SensorSimulation
 
         private:
 
-        sensor_properties<double, 3> gyro_properties;
-        sensor_properties<double, 3> acc_properties;
 
         public:
-
-
-
             ImuSimulation();
             ~ImuSimulation();
+
+
+
+
+            SensorModel3 accel;
+            SensorModel3 gyro;
+            sensor_properties<double, 3> gyro_properties;
+            sensor_properties<double, 3> acc_properties;
             raisim::Vec<6> imu_data;
             raisim::Mat<3,3> imu_Rotation;
             raisim::Vec<3> imu_AngularVelocity;

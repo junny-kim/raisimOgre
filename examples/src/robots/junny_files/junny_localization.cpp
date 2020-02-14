@@ -27,6 +27,7 @@
 #include "raisimKeyboardCallback.hpp"
 #include "helper.hpp"
 #include "SensorSimulation.hpp"
+#include "sensor_model.hpp"
 #include <rbdl/rbdl.h>
 #include <rbdl/rbdl_utils.h>
 
@@ -108,7 +109,7 @@ int main(int argc, char **argv) {
     aliengo->setName("aliengo");
 
     std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0, 0.001);
+    std::normal_distribution<double> distribution(0.0, 0.01);
     std::srand(std::time(nullptr));
     aliengo->printOutBodyNamesInOrder();
     aliengo->printOutFrameNamesInOrder();
@@ -142,7 +143,7 @@ int main(int argc, char **argv) {
             imu_simulation.imu_Velocity_bef = imu_simulation.imu_Velocity;
         }
 
-        imu_simulation.imu_data = imu_simulation.imu_simulation(imu_simulation.imu_Rotation, imu_simulation.imu_AngularVelocity, imu_simulation.imu_Velocity, imu_simulation.imu_Velocity_bef, dt, world);
+        imu_simulation.imu_simulation(imu_simulation.imu_Rotation, imu_simulation.imu_AngularVelocity, imu_simulation.imu_Velocity, imu_simulation.imu_Velocity_bef, dt, world);
 
         if (controlDecimation++ % 50 == 0)
         {
